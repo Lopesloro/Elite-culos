@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>BlueShield Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">🟠 BlueShield <strong>Pro</strong></div>
+
+    <nav>
+        <a href="#beneficios">Benefícios</a>
+        <a href="#publico">Para Quem</a>
+        <a href="#especificacoes">Especificações</a>
+        <a href="#depoimentos">Depoimentos</a>
+    </nav>
+
+    <button class="btn-primary" onclick="irParaCompra()">Comprar Agora</button>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+
+        <span class="badge">🛡 Proteção Profissional</span>
+
+        <h1>
+            Diga Adeus à <span>Fadiga Ocular</span><br>
+            e Dores de Cabeça
+        </h1>
+
+        <p>
+            Desenvolvido para Profissionais de TI, Gamers e qualquer pessoa
+            que passa horas em frente às telas. Proteja sua visão e aumente
+            sua produtividade.
+        </p>
+
+        <div class="benefits">
+            <div>🛡 100% Bloqueio UV</div>
+            <div>⚡ Reduz Fadiga</div>
+            <div>🌙 Melhora o Sono</div>
+        </div>
+
+        <div class="hero-buttons">
+            <button class="btn-primary" onclick="irParaCompra()">Comprar Agora</button>
+            <button class="btn-secondary" onclick="scrollPara('beneficios')">
+                Saiba Mais
+            </button>
+        </div>
+
+    </div>
+
+    <div class="hero-image">
+        <img src="oculos_frente.jpg" alt="Óculos BlueShield Pro">
+    </div>
+</section>
+
+<section id="beneficios" class="section">
+    <h2>Benefícios</h2>
+    <p>Mais conforto visual, menos dores e mais foco no dia a dia.</p>
+</section>
+
+<section id="publico" class="section dark">
+    <h2>Para Quem</h2>
+    <p>Programadores, gamers, designers, estudantes e profissionais digitais.</p>
+</section>
+
+<section id="especificacoes" class="section">
+    <h2>Especificações</h2>
+    <p>Lentes com filtro azul, armação leve e design ergonômico.</p>
+</section>
+
+<section id="depoimentos" class="section dark">
+    <h2>Depoimentos</h2>
+    <p>"Minhas dores de cabeça desapareceram depois que comecei a usar."</p>
+</section>
+
+<section id="compra" class="section compra">
+    <h2>Garanta o Seu Agora</h2>
+    <button class="btn-primary grande" onclick="finalizarCompra()">
+        Comprar Agora
+    </button>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+<header class="navbar">
+    <div class="navbar-container">
+
+        <div class="logo">
+            <span class="icon">🟠</span>
+            <strong>BlueShield</strong> Pro
+        </div>
+
+        <nav class="nav-links">
+            <a href="#beneficios">Benefícios</a>
+            <a href="#publico">Para Quem</a>
+            <a href="#especificacoes">Especificações</a>
+            <a href="#depoimentos">Depoimentos</a>
+        </nav>
+
+        <button class="btn-comprar">
+            Comprar Agora
+        </button>
+
+    </div>
+</header>
+<section id="problema" class="problema-section">
+
+    <span class="problema-badge">O Problema</span>
+
+    <h2>Você se identifica com isso?</h2>
+
+    <p class="problema-descricao">
+        A luz azul emitida por telas digitais é uma das principais causas de desconforto
+        visual e impacta diretamente sua qualidade de vida e produtividade.
+    </p>
+
+    <div class="problema-cards">
+
+        <div class="problema-card">
+            <div class="icone">🖥️</div>
+            <h3>Horas em frente às telas?</h3>
+            <p>Trabalho, estudo ou lazer — as telas dominam nosso dia a dia.</p>
+        </div>
+
+        <div class="problema-card">
+            <div class="icone">👁️</div>
+            <h3>Fadiga ocular e olhos secos?</h3>
+            <p>Sensação de queimação, irritação e cansaço visual constante.</p>
+        </div>
+
+        <div class="problema-card">
+            <div class="icone">🤕</div>
+            <h3>Dores de cabeça frequentes?</h3>
+            <p>Enxaquecas que afetam sua produtividade e qualidade de vida.</p>
+        </div>
+
+        <div class="problema-card">
+            <div class="icone">🌙</div>
+            <h3>Dificuldade para dormir?</h3>
+            <p>A luz azul desregula seu ciclo natural de sono.</p>
+        </div>
+
+    </div>
+
+    <p class="problema-footer">
+        Se você respondeu <strong>sim</strong> a qualquer uma dessas perguntas, você não está sozinho.
+    </p>
+
+</section>
+<button class="btn-secondary" onclick="scrollParaProblema()">
+    Saiba Mais
+</button>
+<section id="solucao" class="solucao-section">
+
+    <div class="solucao-container">
+
+        <!-- IMAGEM -->
+        <div class="solucao-imagem">
+            <img src="oculos_perspectiva.jpg" alt="Óculos BlueShield Pro">
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="solucao-conteudo">
+
+            <span class="solucao-badge">A Solução</span>
+
+            <h2>
+                Óculos Bloqueador de Luz Azul
+                <span>BlueShield Pro</span>
+            </h2>
+
+            <p class="solucao-descricao">
+                Meticulosamente projetado para oferecer a proteção que seus olhos
+                precisam em um mundo cada vez mais digital. Com tecnologia avançada
+                de filtragem de luz azul.
+            </p>
+
+            <div class="solucao-cards">
+
+                <div class="solucao-card">
+                    <div class="icone">🛡️</div>
+                    <h3>Bloqueio de 100% da Luz UV</h3>
+                    <p>Proteja seus olhos dos raios UV prejudiciais, tanto de telas quanto do ambiente.</p>
+                </div>
+
+                <div class="solucao-card">
+                    <div class="icone">✨</div>
+                    <h3>Redução da Luz Azul</h3>
+                    <p>Minimize a exposição à luz azul de alta energia que causa fadiga ocular.</p>
+                </div>
+
+                <div class="solucao-card">
+                    <div class="icone">❤️</div>
+                    <h3>Conforto Visual</h3>
+                    <p>Desfrute de horas de trabalho ou lazer com menos desconforto.</p>
+                </div>
+
+                <div class="solucao-card">
+                    <div class="icone">👁️</div>
+                    <h3>Prevenção de Dores</h3>
+                    <p>Diga adeus às dores de cabeça causadas pelo esforço visual.</p>
+                </div>
+
+                <div class="solucao-card">
+                    <div class="icone">🌙</div>
+                    <h3>Sono Otimizado</h3>
+                    <p>Melhore significativamente a qualidade do seu sono.</p>
+                </div>
+
+                <div class="solucao-card">
+                    <div class="icone">🕶️</div>
+                    <h3>Lentes Premium</h3>
+                    <p>Visão nítida com lentes resistentes e antirreflexo.</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<section id="especificacoes" class="especificacoes-section">
+
+    <span class="especificacoes-badge">Especificações</span>
+
+    <h2>Design Ergonômico Premium</h2>
+
+    <p class="especificacoes-descricao">
+        Desenvolvido para se adaptar confortavelmente ao rosto, minimizando
+        pontos de pressão e garantindo uso prolongado sem incômodos.
+    </p>
+
+    <div class="especificacoes-container">
+
+        <!-- IMAGEM -->
+        <div class="especificacoes-imagem">
+            <img src="oculos_frente.jpg" alt="Dimensões do Óculos BlueShield Pro">
+        </div>
+
+        <!-- DADOS -->
+        <div class="especificacoes-dados">
+
+            <div class="linha">
+                <span>Material da Armação</span>
+                <strong>TR90 Leve e Flexível</strong>
+            </div>
+
+            <div class="linha">
+                <span>Material da Lente</span>
+                <strong>Policarbonato Premium</strong>
+            </div>
+
+            <div class="linha">
+                <span>Largura Total</span>
+                <strong>143mm (5.63in)</strong>
+            </div>
+
+            <div class="linha">
+                <span>Altura do Frame</span>
+                <strong>47mm (1.85in)</strong>
+            </div>
+
+            <div class="linha">
+                <span>Largura da Ponte</span>
+                <strong>48mm (0.86in)</strong>
+            </div>
+
+            <div class="linha">
+                <span>Tecnologia</span>
+                <strong>Bloqueio 400–440nm</strong>
+            </div>
+
+            <div class="especificacoes-highlight">
+                <h3>Tecnologia de Filtragem de Ponta</h3>
+                <p>
+                    Nossas lentes utilizam um revestimento especial desenvolvido
+                    para bloquear seletivamente as ondas de luz azul mais
+                    prejudiciais, sem comprometer a clareza ou a percepção de cores.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
