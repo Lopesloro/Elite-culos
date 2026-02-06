@@ -237,28 +237,23 @@ section {
 }
 
 .hero-image-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-}
-
-.glow-effect {
-    position: absolute;
-    width: 60%;
-    height: 60%;
-    background: var(--primary);
-    filter: blur(120px);
-    opacity: 0.15;
-    z-index: 0;
-    border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .hero-img {
-    position: relative;
-    z-index: 1;
-    transform: perspective(1000px) rotateY(-10deg) rotateX(5deg);
-    transition: transform 0.5s ease;
-    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  max-width: 420px;      /* 👈 DIMINUI A FOTO */
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+
+  /* mantém o efeito premium */
+  transform: perspective(1000px) rotateY(-10deg) rotateX(5deg);
+  transition: transform 0.5s ease;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
 }
 
 .hero-container:hover .hero-img {
