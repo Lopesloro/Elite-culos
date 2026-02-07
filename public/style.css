@@ -1,3 +1,4 @@
+
 /* =========================================
    1. VARIABLES & RESET
    ========================================= */
@@ -32,11 +33,11 @@ html {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif; /* Combinado */
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Permite rolagem vertical, esconde horizontal */
 }
 
 img {
@@ -243,14 +244,13 @@ section {
 }
 
 .hero-img {
-  max-width: 420px;      /* 👈 DIMINUI A FOTO */
+  max-width: 420px;
   width: 100%;
   height: auto;
   object-fit: contain;
   position: relative;
   z-index: 1;
 
-  /* mantém o efeito premium */
   transform: perspective(1000px) rotateY(-10deg) rotateX(5deg);
   transition: transform 0.5s ease;
   filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
@@ -406,11 +406,124 @@ footer {
     .hero-features, .hero-actions { justify-content: center; }
     .hero-description { margin-left: auto; margin-right: auto; }
     
-    .nav-links { display: none; } /* Simplificado para este exercício */
-    .mobile-toggle { display: block; } /* Placeholder */
+    .nav-links { display: none; }
+    .mobile-toggle { display: block; }
     
     .reverse-mobile { display: flex; flex-direction: column-reverse; }
     
     .spec-row { text-align: left; }
     .footer-content { flex-direction: column; gap: 16px; }
+}
+
+/* =========================================
+   5. LOGIN MODAL SYSTEM (CORRIGIDO)
+   ========================================= */
+
+/* Modal Background */
+.modal-container {
+    display: none; /* Escondido por padrão */
+    position: fixed; /* Fixo na tela */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Fundo escuro */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Fica acima da Navbar (que é 1000) */
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: #1e1e2f;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    color: white;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown { 
+    from {transform: translateY(-50px); opacity: 0;} 
+    to {transform: translateY(0); opacity: 1;} 
+}
+
+.close-btn { 
+    position: absolute; 
+    top: 15px; 
+    right: 20px; 
+    font-size: 28px; 
+    cursor: pointer; 
+    color: #aaa;
+    transition: 0.2s;
+}
+.close-btn:hover { color: white; }
+
+/* Tabs */
+.tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.tab-btn {
+    flex: 1; 
+    padding: 12px; 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    font-weight: 600; 
+    color: #888;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+.tab-btn.active { 
+    color: var(--primary); 
+    border-bottom: 2px solid var(--primary); 
+}
+
+/* Forms */
+.auth-form { display: none; flex-direction: column; gap: 15px; }
+.auth-form.active-form { display: flex; }
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+.input-group { position: relative; }
+
+.input-group input {
+    width: 100%; 
+    padding: 12px 15px; 
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); 
+    border-radius: 8px; 
+    outline: none;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+}
+
+.input-group input::placeholder {
+    color: #666;
+}
+
+.btn-submit {
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-submit:hover { 
+    background: var(--primary-hover); 
+    transform: translateY(-2px);
 }

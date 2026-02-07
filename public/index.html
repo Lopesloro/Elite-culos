@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,7 +30,7 @@
                 <a href="#specs">Especificações</a>
             </nav>
 
-            <button class="btn btn-primary btn-sm" onclick="scrollToSection('buy')">
+            <button class="btn btn-primary btn-sm btn-comprar-trigger">
                 Comprar Agora
             </button>
             
@@ -58,8 +60,8 @@
                     </div>
 
                     <div class="hero-actions">
-                        <button class="btn btn-primary" onclick="scrollToSection('buy')">Quero Proteger Minha Visão</button>
-                        <button class="btn btn-secondary" onclick="scrollToSection('solution')">Saiba Mais</button>
+                        <button class="btn btn-primary btn-comprar-trigger">Quero Proteger Minha Visão</button>
+                        <button class="btn btn-secondary" onclick="window.location.href='#solution'">Saiba Mais</button>
                     </div>
                 </div>
 
@@ -156,7 +158,7 @@
                 <div class="specs-grid">
                     <div class="specs-visual">
                         <img src="oculos_frente.png" alt="Vista frontal com dimensões" class="specs-img">
-                        </div>
+                    </div>
 
                     <div class="specs-data">
                         <div class="spec-row">
@@ -188,7 +190,7 @@
             <div class="container">
                 <h2>Invista na sua saúde visual hoje</h2>
                 <p>Junte-se a milhares de profissionais que aumentaram sua produtividade.</p>
-                <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidade de checkout iniciada!')">
+                <button class="btn btn-primary btn-lg btn-comprar-trigger">
                     Garanta o Seu Agora
                 </button>
             </div>
@@ -203,6 +205,47 @@
             <p class="copyright">© 2024 BlueShield Pro. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Criar Conta</button>
+            </div>
+
+            <form id="form-login" class="auth-form active-form">
+                <h2>Bem-vindo de volta</h2>
+                <div class="input-group">
+                    <i class='bx bx-envelope'></i> <input type="email" id="login-email" placeholder="Seu E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class='bx bx-lock-alt'></i> <input type="password" id="login-senha" placeholder="Sua Senha" required>
+                </div>
+                <button type="submit" class="btn-submit">ENTRAR</button>
+            </form>
+
+            <form id="form-register" class="auth-form">
+    <h2>Nova Conta</h2>
+    
+    <div class="input-group"><input type="text" id="reg-nome" placeholder="Nome Completo" required></div>
+    <div class="input-group"><input type="email" id="reg-email" placeholder="E-mail" required></div>
+    <div class="input-group"><input type="password" id="reg-senha" placeholder="Senha" required></div>
+
+    <div class="input-group"><input type="text" id="reg-endereco" placeholder="Endereço (Rua, Número)"></div>
+    
+    <div class="input-group"><input type="text" id="reg-cidade" placeholder="Cidade" required></div>
+    
+    <div class="input-group" style="display: flex; gap: 10px;">
+        <input type="text" id="reg-estado" placeholder="UF" maxlength="2" style="width: 30%;" required>
+        <input type="text" id="reg-cep" placeholder="CEP" style="width: 70%;" required>
+    </div>
+
+    <div class="input-group"><input type="text" id="reg-celular" placeholder="Celular"></div>
+    
+    <button type="submit" class="btn-submit">PAGAR R$ 299,00 E CADASTRAR</button>
+</form>
 
     <script src="script.js"></script>
 </body>
