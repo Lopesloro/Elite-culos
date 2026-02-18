@@ -4,9 +4,8 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
 const path = require('path');
-const nodemailer = require('nodemailer'); // <--- 1. ADICIONADO: Importar o nodemailer
+const nodemailer = require('nodemailer');
 
-// Carrega variáveis de ambiente (caso o db.js não tenha carregado globalmente)
 require('dotenv').config();
 
 const app = express();
@@ -15,109 +14,94 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- 2. ADICIONADO: Configuração do E-mail (Gmail) ---
+// CONFIGURAÇÃO DO EMAIL
 const transporter = nodemailer.createTransport({
-    service: 'gmail', 
+    service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // Seu e-mail (do arquivo .env)
-        pass: process.env.EMAIL_PASS  // Sua senha de app (do arquivo .env)
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
-// ROTA DE REGISTRO/COMPRA
+// ================= REGISTER =================
 app.post('/register', async (req, res) => {
-    // 1. Recebe os dados do formulário (SEM O PREÇO)
-    const { nome, email, senha, endereco, cidade, estado, cep, numero_celular } = req.body;
-
-    // 2. Define o preço fixo aqui no servidor (Segurança)
+    const { nome, cpf, email, senha, endereco, cidade, estado, cep, numero_celular } = req.body;
     const precoFixo = 299.00;
 
-    if (!email || !senha || !nome) {
-        return res.status(400).json({ message: 'Preencha os campos obrigatórios.' });
+    if (!email || !senha || !nome || !cpf) {
+        return res.status(400).json({ message: 'Preencha todos os campos obrigatórios.' });
     }
 
     try {
         const salt = await bcrypt.genSalt(10);
         const hashSenha = await bcrypt.hash(senha, salt);
 
-        // 3. Salva tudo no banco, incluindo o preço fixo e os dados de endereço
-        const sql = `INSERT INTO usuarios 
-        (nome, email, senha, endereco, cidade, estado, cep, numero_celular, preco_valor_pago) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        
+        const sql = `
+            INSERT INTO usuarios
+            (nome, cpf, email, senha, endereco, cidade, estado, cep, numero_celular, preco_valor_pago)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
         await db.query(sql, [
-            nome, 
+            nome,
+            cpf,
             email,
-            CPF, 
-            hashSenha, 
-            endereco, 
-            cidade, 
-            estado, 
-            cep, 
-            numero_celular, 
-            precoFixo 
+            hashSenha,
+            endereco,
+            cidade,
+            estado,
+            cep,
+            numero_celular,
+            precoFixo
         ]);
 
-        // --- 3. ADICIONADO: Lógica de Envio de E-mails ---
-        
-        // E-mail A: Para o Cliente (Confirmação Bonita em HTML)
+        // ===== EMAIL CLIENTE =====
         const mailOptionsCliente = {
             from: `"VisionProtect" <${process.env.EMAIL_USER}>`,
-            to: email, // Envia para o e-mail que a pessoa cadastrou
+            to: email,
             subject: 'Pedido Confirmado! - VisionProtect',
             html: `
-                <div style="font-family: Arial, sans-serif; color: #333;">
-                    <h1 style="color: #2da44e;">Obrigado, ${nome}!</h1>
-                    <p>Seu pedido dos óculos <strong>VisionProtect Pro</strong> foi recebido.</p>
-                    <hr>
-                    <h3>Resumo do Pedido:</h3>
-                    <p><strong>Valor:</strong> R$ 299,00</p>
-                    <p><strong>Endereço de Entrega:</strong><br>
-                    ${endereco}, ${cidade} - ${estado}<br>
-                    CEP: ${cep}</p>
-                    <hr>
-                    <p>Em breve enviaremos o código de rastreio.</p>
-                </div>
+                <h2>Obrigado, ${nome}!</h2>
+                <p>Seu pedido foi confirmado.</p>
+                <p><strong>Valor:</strong> R$ 299,00</p>
+                <p>${endereco}, ${cidade} - ${estado} | CEP: ${cep}</p>
             `
         };
 
-        // E-mail B: Para Você/Admin (Alerta de Venda Simples)
+        // ===== EMAIL ADMIN =====
         const mailOptionsAdmin = {
             from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_ADMIN, // Seu e-mail pessoal (definido no .env)
-            subject: `💰 Nova Venda: ${nome}`,
+            to: process.env.EMAIL_ADMIN,
+            subject: `Nova venda - ${nome}`,
             text: `
-                NOVA VENDA REALIZADA!
-                
-                Cliente: ${nome}
-                E-mail: ${email}
-                WhatsApp: ${numero_celular}
-                Endereço: ${endereco} - ${cidade}/${estado}
-                CEP: ${cep}
-                CPF: ${CPF}
+Cliente: ${nome}
+Email: ${email}
+Telefone: ${numero_celular}
+CPF: ${cpf}
+Endereço: ${endereco}, ${cidade} - ${estado} | CEP ${cep}
             `
         };
 
-        // Dispara os e-mails (não trava o servidor se der erro no envio)
-        transporter.sendMail(mailOptionsCliente).catch(err => console.error("Erro e-mail cliente:", err));
-        transporter.sendMail(mailOptionsAdmin).catch(err => console.error("Erro e-mail admin:", err));
+        transporter.sendMail(mailOptionsCliente).catch(err => console.log(err));
+        transporter.sendMail(mailOptionsAdmin).catch(err => console.log(err));
 
-        // --- FIM DA LÓGICA DE E-MAIL ---
-        
-        res.status(201).json({ message: 'Compra de R$ 299,00 realizada com sucesso! Verifique seu e-mail.' });
+        res.status(201).json({ message: 'Compra realizada com sucesso!' });
 
     } catch (error) {
-        console.error("Erro no servidor:", error);
+        console.error(error);
+
         if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ message: 'Este e-mail já realizou uma compra.' });
+            return res.status(400).json({ message: 'Este e-mail já existe.' });
         }
-        res.status(500).json({ message: 'Erro interno ao processar compra.' });
+
+        res.status(500).json({ message: 'Erro interno ao cadastrar.' });
     }
 });
 
-// ROTA DE LOGIN
+// ================= LOGIN =================
 app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
+
     try {
         const [rows] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
         if (rows.length === 0) return res.status(401).json({ message: 'Email não encontrado.' });
@@ -127,11 +111,11 @@ app.post('/login', async (req, res) => {
         if (!senhaValida) return res.status(401).json({ message: 'Senha incorreta.' });
 
         res.json({ message: 'Login realizado!', usuario: { nome: usuario.nome } });
+
     } catch (error) {
         res.status(500).json({ message: 'Erro interno.' });
     }
 });
 
-// Porta do Servidor (3000)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
