@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const payload = {
                 nome: document.getElementById('reg-nome').value,
                 email: document.getElementById('reg-email').value,
+                CPF: document.getElementById('CPF').value,
                 senha: document.getElementById('reg-senha').value,
                 endereco: document.getElementById('reg-endereco').value,
                 cidade: document.getElementById('reg-cidade').value,
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (res.ok) {
                     // Mensagem de sucesso confirmando o valor fixo
-                    alert('Compra de R$ 299,00 confirmada! Conta criada com sucesso.');
+                    alert( 'Conta criada com sucesso.');
                     
                     // Muda para a tela de login automaticamente
                     switchTab('login');
@@ -105,4 +106,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});r
+});
