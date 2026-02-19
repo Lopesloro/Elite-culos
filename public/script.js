@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // OBS: Não pegamos mais o preço aqui. O servidor define 299.00 sozinho.
             const payload = {
                 nome: document.getElementById('reg-nome').value,
-                email: document.getElementById('reg-email').value,
-                CPF: document.getElementById('CPF').value,
+                cpf: document.getElementById('cpf').value,
+                email: document.getElementById('reg-email').value,              
                 senha: document.getElementById('reg-senha').value,
                 endereco: document.getElementById('reg-endereco').value,
                 cidade: document.getElementById('reg-cidade').value,
@@ -106,4 +106,79 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('checkout-form');
+    const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
+    
+    // Gerenciar visibilidade dos campos de pagamento
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            document.querySelectorAll('.payment-details').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${e.target.value}-details`).classList.remove('hidden');
+        });
+    });
+
+    // Envio para a API
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Pagamento processado com sucesso! Você receberá a confirmação por e-mail.');
+                window.location.href = '/'; // Redireciona para home
+            } else {
+                alert('Erro ao processar pagamento. Verifique seus dados.');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Falha na conexão com o servidor.');
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const unitPrice = 297.00;
+    const shipping = 19.90;
+    let currentQty = 1;
+
+    const qtyEl = document.getElementById('qty');
+    const itemSubtotalEl = document.getElementById('item-subtotal');
+    const subTotalLabel = document.getElementById('sub-total-label');
+    const totalLabel = document.getElementById('total-label');
+    const btnPlus = document.getElementById('plus');
+    const btnMinus = document.getElementById('minus');
+
+    function updateDisplay() {
+        const subtotal = currentQty * unitPrice;
+        const total = subtotal + shipping;
+        
+        qtyEl.innerText = currentQty;
+        const format = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        itemSubtotalEl.innerText = format(subtotal);
+        subTotalLabel.innerText = format(subtotal);
+        totalLabel.innerText = format(total);
+    }
+
+    btnPlus.onclick = () => { currentQty++; updateDisplay(); };
+    btnMinus.onclick = () => { if(currentQty > 1) { currentQty--; updateDisplay(); } };
+
+    // Máscara básica para CPF
+    document.getElementById('cpf-mask').oninput = (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    };
 });

@@ -119,3 +119,8 @@ app.post('/login', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+
+
+app.get('/pagamento', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pagamento.html'));
+});

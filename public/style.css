@@ -527,3 +527,114 @@ footer {
     background: var(--primary-hover); 
     transform: translateY(-2px);
 }
+
+:root {
+    --bg-page: #0b0d12;       /* Fundo da página */
+    --bg-card: #11141a;       /* Fundo dos cartões */
+    --bg-input: #1a1e26;      /* Fundo dos campos */
+    --border-card: #1f242e;
+    --accent: #f97316;        /* Laranja Provision */
+    --text-white: #ffffff;
+    --text-gray: #9ca3af;
+    --font-serif: 'Playfair Display', serif;
+    --font-sans: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-white);
+    font-family: var(--font-sans);
+    margin: 0;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* Header */
+.main-header { padding: 40px 0 20px; }
+.logo-wrapper { display: flex; align-items: center; gap: 15px; }
+.brand { font-family: var(--font-serif); color: var(--accent); font-weight: 700; font-size: 1.4rem; }
+.header-divider { width: 2px; height: 20px; background-color: #333; }
+.view-title { font-family: var(--font-serif); font-size: 1.4rem; }
+
+/* Layout Grid */
+.checkout-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; margin-top: 20px; }
+
+@media (max-width: 850px) {
+    .checkout-grid { grid-template-columns: 1fr; }
+}
+
+/* Cards */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 25px;
+}
+.card-headline { font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 25px; }
+
+/* Inputs */
+.field-stack { display: flex; flex-direction: column; margin-bottom: 18px; width: 100%; }
+.field-row { display: flex; gap: 15px; }
+label { font-size: 0.75rem; font-weight: 600; color: var(--text-gray); margin-bottom: 8px; text-transform: uppercase; }
+input, select {
+    background-color: var(--bg-input);
+    border: 1px solid #262b36;
+    border-radius: 6px;
+    height: 48px;
+    padding: 0 15px;
+    color: #fff;
+    outline: none;
+}
+input:focus { border-color: var(--accent); }
+
+.flex-grow-2 { flex: 2; }
+.flex-grow-1 { flex: 1; }
+
+/* Custom Select */
+.select-container { position: relative; }
+.select-container::after { content: '▼'; position: absolute; right: 15px; top: 15px; font-size: 0.7rem; color: #555; pointer-events: none; }
+select { appearance: none; width: 100%; cursor: pointer; }
+
+/* Resumo Produto */
+.product-info-display { display: flex; gap: 15px; margin-bottom: 25px; }
+.img-thumb img { width: 85px; height: 85px; background: #000; border-radius: 8px; object-fit: cover; }
+.text-meta h3 { font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 5px; }
+.text-meta p { font-size: 0.8rem; color: var(--text-gray); line-height: 1.4; margin-bottom: 8px; }
+.orange-price { color: var(--accent); font-weight: 700; }
+
+.qty-and-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-input);
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+.qty-control { display: flex; align-items: center; gap: 15px; }
+.qty-control button { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
+.price-sum { font-weight: 700; font-size: 1.1rem; }
+
+/* Totais */
+.row-info { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: #ccc; }
+.line-break { height: 1px; background: #262b36; margin: 20px 0; }
+.total-row { color: #fff; font-weight: 700; }
+.big-orange { color: var(--accent); font-size: 1.6rem; }
+
+/* Botão */
+.btn-submit {
+    background-color: var(--accent);
+    color: #000;
+    width: 100%;
+    border: none;
+    padding: 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.footer-security { text-align: center; font-size: 0.75rem; color: #666; margin-top: 15px; }
