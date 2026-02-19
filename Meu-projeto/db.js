@@ -1,17 +1,25 @@
-const mysql = require('mysql2');
-require('dotenv').config();
+const Database = require('better-sqlite3');
+const path = require('path');
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: 3306, // Adicionei isso forçadamente para garantir
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+const db = new Database(path.join(__dirname, 'database.sqlite'));
 
-const promisePool = pool.promise();
-console.log("Conectado ao pool do MySQL.");
-module.exports = promisePool;
+db.exec(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        cpf TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        senha TEXT NOT NULL,
+        endereco TEXT,
+        cidade TEXT,
+        estado TEXT,
+        cep TEXT,
+        numero_celular TEXT,
+        preco_valor_pago REAL,
+        criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+`);
+
+console.log("Banco de dados SQLite conectado.");
+
+module.exports = db;

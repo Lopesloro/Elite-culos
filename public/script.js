@@ -1,337 +1,149 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- ELEMENTOS DO DOM ---
-    const modal = document.getElementById('modal-container');
-    const closeBtn = document.querySelector('.close-btn');
-    const botoesComprar = document.querySelectorAll('.btn-comprar-trigger'); 
-    const forms = {
-        login: document.getElementById('form-login'),
-        register: document.getElementById('form-register')
-    };
 
-    // --- 1. ABRIR MODAL (Em todos os botões de compra) ---
-    botoesComprar.forEach(botao => {
-        botao.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            modal.style.display = 'flex'; 
-        });
+// ---- UTILS ----
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast show ' + type;
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.className = 'toast'; }, 3500);
+}
+
+function maskCPF(v) {
+    v = v.replace(/\D/g, '').substring(0, 11);
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    return v;
+}
+
+function maskPhone(v) {
+    v = v.replace(/\D/g, '').substring(0, 11);
+    if (v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    else v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    return v;
+}
+
+function maskCEP(v) {
+    v = v.replace(/\D/g, '').substring(0, 8);
+    v = v.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+    return v;
+}
+
+function applyMask(id, fn) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', e => { e.target.value = fn(e.target.value); });
+}
+
+// ---- NAVBAR SCROLL ----
+const navbar = document.getElementById('navbar');
+if (navbar) {
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 20);
     });
+}
 
-    // --- 2. FECHAR MODAL ---
-    if(closeBtn) {
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    }
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
-
-    // --- 3. ALTERNAR ENTRE ABAS (LOGIN / CADASTRO) ---
-    window.switchTab = function(tabName) {
-        // Atualiza estilo dos botões (abas)
-        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-        if(event) event.target.classList.add('active');
-
-        // Mostra o formulário correto
-        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active-form'));
-        if(forms[tabName]) forms[tabName].classList.add('active-form');
-    }
-
-    // --- 4. SISTEMA DE LOGIN ---
-    if(forms.login) {
-        forms.login.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const senha = document.getElementById('login-senha').value;
-    
-            try {
-                const res = await fetch('http://localhost:3000/login', { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    alert('Login realizado com sucesso! Bem-vindo(a).');
-                    modal.style.display = 'none';
-                } else {
-                    alert(data.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao conectar com servidor.');
-            }
-        });
-    }
-
-    // --- 5. SISTEMA DE CADASTRO (ATUALIZADO) ---
-    if(forms.register) {
-        forms.register.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Captura os dados do formulário HTML
-            // OBS: Não pegamos mais o preço aqui. O servidor define 299.00 sozinho.
-            const payload = {
-                nome: document.getElementById('reg-nome').value,
-                cpf: document.getElementById('cpf').value,
-                email: document.getElementById('reg-email').value,              
-                senha: document.getElementById('reg-senha').value,
-                endereco: document.getElementById('reg-endereco').value,
-                cidade: document.getElementById('reg-cidade').value,
-                estado: document.getElementById('reg-estado').value,
-                cep: document.getElementById('reg-cep').value,
-                numero_celular: document.getElementById('reg-celular').value
-            };
-    
-            try {
-                const res = await fetch('http://localhost:3000/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    // Mensagem de sucesso confirmando o valor fixo
-                    alert( 'Conta criada com sucesso.');
-                    
-                    // Muda para a tela de login automaticamente
-                    switchTab('login');
-                    
-                    // (Opcional) Limpa o formulário
-                    forms.register.reset();
-                } else {
-                    alert(data.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao tentar registrar. Verifique se o servidor está rodando.');
-            }
-        });
-    }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('checkout-form');
-    const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
-    
-    // Gerenciar visibilidade dos campos de pagamento
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            document.querySelectorAll('.payment-details').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`${e.target.value}-details`).classList.remove('hidden');
-        });
+// ---- MOBILE MENU ----
+const mobileToggle = document.getElementById('mobile-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+if (mobileToggle && mobileMenu) {
+    mobileToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
     });
+    mobileMenu.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+}
 
-    // Envio para a API
-    form.addEventListener('submit', async (e) => {
+// ---- BOTÕES COMPRAR → redireciona para /pagamento ----
+document.querySelectorAll('.btn-comprar-trigger').forEach(btn => {
+    btn.addEventListener('click', e => {
         e.preventDefault();
+        window.location.href = '/pagamento';
+    });
+});
 
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+// ---- CHECKOUT PAGE (/pagamento) ----
+const UNIT_PRICE = 299.00;
+let qty = 1;
+
+const qtyEl = document.getElementById('qty');
+const subTotalLabel = document.getElementById('sub-total-label');
+const totalLabel = document.getElementById('total-label');
+const btnPlus = document.getElementById('plus');
+const btnMinus = document.getElementById('minus');
+
+function fmt(val) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+}
+
+function updatePrices() {
+    const sub = qty * UNIT_PRICE;
+    if (qtyEl) qtyEl.textContent = qty;
+    if (subTotalLabel) subTotalLabel.textContent = fmt(sub);
+    if (totalLabel) totalLabel.textContent = fmt(sub);
+}
+
+if (btnPlus) btnPlus.addEventListener('click', () => { qty++; updatePrices(); });
+if (btnMinus) btnMinus.addEventListener('click', () => { if (qty > 1) { qty--; updatePrices(); } });
+
+// Checkout masks
+applyMask('co-cpf', maskCPF);
+applyMask('co-tel', maskPhone);
+applyMask('co-cep', maskCEP);
+
+const purchaseForm = document.getElementById('purchase-form');
+if (purchaseForm) {
+    purchaseForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-checkout');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.8s linear infinite">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+            <span>Processando...</span>`;
+
+        const payload = {
+            nome: document.getElementById('co-nome').value,
+            email: document.getElementById('co-email').value,
+            cpf: document.getElementById('co-cpf').value,
+            numero_celular: document.getElementById('co-tel').value,
+            cep: document.getElementById('co-cep').value,
+            endereco: document.getElementById('co-endereco').value,
+            cidade: document.getElementById('co-cidade').value,
+            estado: document.getElementById('co-estado').value,
+            quantidade: qty,
+            total: qty * UNIT_PRICE
+        };
 
         try {
-            const response = await fetch('/checkout', {
+            const res = await fetch('/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ ...payload, senha: Math.random().toString(36).slice(-8) })
             });
-
-            if (response.ok) {
-                alert('Pagamento processado com sucesso! Você receberá a confirmação por e-mail.');
-                window.location.href = '/'; // Redireciona para home
+            const data = await res.json();
+            if (res.ok) {
+                showToast('Pedido confirmado! Você receberá um e-mail.', 'success');
+                setTimeout(() => { window.location.href = '/'; }, 2500);
             } else {
-                alert('Erro ao processar pagamento. Verifique seus dados.');
+                showToast(data.message || 'Erro ao processar pedido.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
             }
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Falha na conexão com o servidor.');
+        } catch {
+            showToast('Erro de conexão com o servidor.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
         }
     });
-});
-document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. CONFIGURAÇÕES DE PREÇO ---
-    const UNIT_PRICE = 297.00;
-    const SHIPPING = 0.00; // Frete Zero conforme solicitado
-    let currentQty = 1;
+}
 
-    // --- 2. ELEMENTOS DO DOM ---
-    // Modal e Auth
-    const modal = document.getElementById('modal-container');
-    const closeBtn = document.querySelector('.close-btn');
-    const botoesComprar = document.querySelectorAll('.btn-comprar-trigger'); 
-    const formLogin = document.getElementById('form-login');
-    const formRegister = document.getElementById('form-register');
+// Spinner keyframe (inline injection)
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
 
-    // Checkout e Preços
-    const qtyText = document.getElementById('qty');
-    const itemSubtotalText = document.getElementById('item-subtotal');
-    const subTotalLabel = document.getElementById('sub-total-label');
-    const totalLabel = document.getElementById('total-label');
-    const btnPlus = document.getElementById('plus');
-    const btnMinus = document.getElementById('minus');
-    const checkoutForm = document.getElementById('purchase-form');
-
-    // --- 3. LÓGICA DE PREÇOS (MATEMÁTICA CORRIGIDA) ---
-    function updateDisplay() {
-        const subtotalValue = currentQty * UNIT_PRICE;
-        const totalValue = subtotalValue + SHIPPING;
-        
-        const formatter = new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        });
-        
-        if(qtyText) qtyText.innerText = currentQty;
-        if(itemSubtotalText) itemSubtotalText.innerText = formatter.format(subtotalValue);
-        if(subTotalLabel) subTotalLabel.innerText = formatter.format(subtotalValue);
-        if(totalLabel) totalLabel.innerText = formatter.format(totalValue);
-    }
-
-    // Eventos de Quantidade
-    if(btnPlus) {
-        btnPlus.onclick = () => { currentQty++; updateDisplay(); };
-    }
-    if(btnMinus) {
-        btnMinus.onclick = () => { if(currentQty > 1) { currentQty--; updateDisplay(); } };
-    }
-
-    // --- 4. MODAL E ALTERNÂNCIA DE TABS ---
-    botoesComprar.forEach(botao => {
-        botao.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            if(modal) modal.style.display = 'flex'; 
-        });
-    });
-
-    if(closeBtn) {
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    }
-
-    window.onclick = (e) => { 
-        if (modal && e.target == modal) modal.style.display = 'none'; 
-    }
-
-    // Função global para trocar abas no Modal
-    window.switchTab = function(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-        // Se o evento existir, marca o botão clicado como ativo
-        if(event && event.target) event.target.classList.add('active');
-
-        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active-form'));
-        const targetForm = document.getElementById(`form-${tabName}`);
-        if(targetForm) targetForm.classList.add('active-form');
-    }
-
-    // --- 5. MÁSCARAS DE INPUT (UX) ---
-    const cpfInput = document.getElementById('cpf-mask');
-    if (cpfInput) {
-        cpfInput.oninput = (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            e.target.value = v.substring(0, 14);
-        };
-    }
-
-    // --- 6. ENVIOS DE FORMULÁRIOS (API) ---
-
-    // Login
-    if(formLogin) {
-        formLogin.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const senha = document.getElementById('login-senha').value;
-    
-            try {
-                const res = await fetch('/login', { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    alert('Login realizado com sucesso!');
-                    modal.style.display = 'none';
-                } else {
-                    alert(data.message);
-                }
-            } catch (err) {
-                alert('Erro ao conectar com servidor.');
-            }
-        });
-    }
-
-    // Registro
-    if(formRegister) {
-        formRegister.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                nome: document.getElementById('reg-nome').value,
-                cpf: document.getElementById('cpf-mask') ? document.getElementById('cpf-mask').value : '',
-                email: document.getElementById('reg-email').value,              
-                senha: document.getElementById('reg-senha').value,
-                endereco: document.getElementById('reg-endereco').value,
-                cidade: document.getElementById('reg-cidade').value,
-                estado: document.getElementById('reg-estado') ? document.getElementById('reg-estado').value : '',
-                cep: document.getElementById('reg-cep').value,
-                numero_celular: document.getElementById('reg-celular').value
-            };
-    
-            try {
-                const res = await fetch('/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    alert('Conta criada com sucesso!');
-                    switchTab('login');
-                    formRegister.reset();
-                } else {
-                    const data = await res.json();
-                    alert(data.message);
-                }
-            } catch (err) {
-                alert('Erro ao conectar com servidor.');
-            }
-        });
-    }
-
-    // Finalizar Checkout
-    if(checkoutForm) {
-        checkoutForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = checkoutForm.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-
-            const formData = new FormData(checkoutForm);
-            const data = Object.fromEntries(formData.entries());
-            data.quantidade = currentQty;
-            data.total = currentQty * UNIT_PRICE;
-
-            try {
-                btn.innerText = "Processando...";
-                btn.disabled = true;
-
-                const response = await fetch('/checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert('Pedido realizado com sucesso!');
-                    window.location.href = '/'; 
-                } else {
-                    alert('Erro ao processar pedido.');
-                }
-            } catch (error) {
-                alert('Erro na conexão.');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        });
-    }
-
-    // Inicializa os preços na tela
-    updateDisplay();
-});
+updatePrices();

@@ -12,7 +12,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // CONFIGURAÇÃO DO EMAIL
 const transporter = nodemailer.createTransport({
@@ -36,24 +36,13 @@ app.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashSenha = await bcrypt.hash(senha, salt);
 
-        const sql = `
+        const stmt = db.prepare(`
             INSERT INTO usuarios
             (nome, cpf, email, senha, endereco, cidade, estado, cep, numero_celular, preco_valor_pago)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
+        `);
 
-        await db.query(sql, [
-            nome,
-            cpf,
-            email,
-            hashSenha,
-            endereco,
-            cidade,
-            estado,
-            cep,
-            numero_celular,
-            precoFixo
-        ]);
+        stmt.run(nome, cpf, email, hashSenha, endereco, cidade, estado, cep, numero_celular, precoFixo);
 
         // ===== EMAIL CLIENTE =====
         const mailOptionsCliente = {
@@ -90,7 +79,7 @@ Endereço: ${endereco}, ${cidade} - ${estado} | CEP ${cep}
     } catch (error) {
         console.error(error);
 
-        if (error.code === 'ER_DUP_ENTRY') {
+        if (error.message && error.message.includes('UNIQUE constraint failed')) {
             return res.status(400).json({ message: 'Este e-mail já existe.' });
         }
 
@@ -103,10 +92,9 @@ app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     try {
-        const [rows] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
-        if (rows.length === 0) return res.status(401).json({ message: 'Email não encontrado.' });
+        const usuario = db.prepare('SELECT * FROM usuarios WHERE email = ?').get(email);
+        if (!usuario) return res.status(401).json({ message: 'Email não encontrado.' });
 
-        const usuario = rows[0];
         const senhaValida = await bcrypt.compare(senha, usuario.senha);
         if (!senhaValida) return res.status(401).json({ message: 'Senha incorreta.' });
 
@@ -117,10 +105,9 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.get('/pagamento', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'pagamento.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-
-
-app.get('/pagamento', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pagamento.html'));
-});
