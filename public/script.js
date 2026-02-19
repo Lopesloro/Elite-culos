@@ -145,40 +145,193 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
 document.addEventListener('DOMContentLoaded', () => {
-    const unitPrice = 297.00;
-    const shipping = 19.90;
+    // --- 1. CONFIGURAÇÕES DE PREÇO ---
+    const UNIT_PRICE = 297.00;
+    const SHIPPING = 0.00; // Frete Zero conforme solicitado
     let currentQty = 1;
 
-    const qtyEl = document.getElementById('qty');
-    const itemSubtotalEl = document.getElementById('item-subtotal');
+    // --- 2. ELEMENTOS DO DOM ---
+    // Modal e Auth
+    const modal = document.getElementById('modal-container');
+    const closeBtn = document.querySelector('.close-btn');
+    const botoesComprar = document.querySelectorAll('.btn-comprar-trigger'); 
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+
+    // Checkout e Preços
+    const qtyText = document.getElementById('qty');
+    const itemSubtotalText = document.getElementById('item-subtotal');
     const subTotalLabel = document.getElementById('sub-total-label');
     const totalLabel = document.getElementById('total-label');
     const btnPlus = document.getElementById('plus');
     const btnMinus = document.getElementById('minus');
+    const checkoutForm = document.getElementById('purchase-form');
 
+    // --- 3. LÓGICA DE PREÇOS (MATEMÁTICA CORRIGIDA) ---
     function updateDisplay() {
-        const subtotal = currentQty * unitPrice;
-        const total = subtotal + shipping;
+        const subtotalValue = currentQty * UNIT_PRICE;
+        const totalValue = subtotalValue + SHIPPING;
         
-        qtyEl.innerText = currentQty;
-        const format = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const formatter = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        });
         
-        itemSubtotalEl.innerText = format(subtotal);
-        subTotalLabel.innerText = format(subtotal);
-        totalLabel.innerText = format(total);
+        if(qtyText) qtyText.innerText = currentQty;
+        if(itemSubtotalText) itemSubtotalText.innerText = formatter.format(subtotalValue);
+        if(subTotalLabel) subTotalLabel.innerText = formatter.format(subtotalValue);
+        if(totalLabel) totalLabel.innerText = formatter.format(totalValue);
     }
 
-    btnPlus.onclick = () => { currentQty++; updateDisplay(); };
-    btnMinus.onclick = () => { if(currentQty > 1) { currentQty--; updateDisplay(); } };
+    // Eventos de Quantidade
+    if(btnPlus) {
+        btnPlus.onclick = () => { currentQty++; updateDisplay(); };
+    }
+    if(btnMinus) {
+        btnMinus.onclick = () => { if(currentQty > 1) { currentQty--; updateDisplay(); } };
+    }
 
-    // Máscara básica para CPF
-    document.getElementById('cpf-mask').oninput = (e) => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        e.target.value = v;
-    };
+    // --- 4. MODAL E ALTERNÂNCIA DE TABS ---
+    botoesComprar.forEach(botao => {
+        botao.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            if(modal) modal.style.display = 'flex'; 
+        });
+    });
+
+    if(closeBtn) {
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    }
+
+    window.onclick = (e) => { 
+        if (modal && e.target == modal) modal.style.display = 'none'; 
+    }
+
+    // Função global para trocar abas no Modal
+    window.switchTab = function(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        // Se o evento existir, marca o botão clicado como ativo
+        if(event && event.target) event.target.classList.add('active');
+
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active-form'));
+        const targetForm = document.getElementById(`form-${tabName}`);
+        if(targetForm) targetForm.classList.add('active-form');
+    }
+
+    // --- 5. MÁSCARAS DE INPUT (UX) ---
+    const cpfInput = document.getElementById('cpf-mask');
+    if (cpfInput) {
+        cpfInput.oninput = (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = v.substring(0, 14);
+        };
+    }
+
+    // --- 6. ENVIOS DE FORMULÁRIOS (API) ---
+
+    // Login
+    if(formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+    
+            try {
+                const res = await fetch('/login', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Login realizado com sucesso!');
+                    modal.style.display = 'none';
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor.');
+            }
+        });
+    }
+
+    // Registro
+    if(formRegister) {
+        formRegister.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                nome: document.getElementById('reg-nome').value,
+                cpf: document.getElementById('cpf-mask') ? document.getElementById('cpf-mask').value : '',
+                email: document.getElementById('reg-email').value,              
+                senha: document.getElementById('reg-senha').value,
+                endereco: document.getElementById('reg-endereco').value,
+                cidade: document.getElementById('reg-cidade').value,
+                estado: document.getElementById('reg-estado') ? document.getElementById('reg-estado').value : '',
+                cep: document.getElementById('reg-cep').value,
+                numero_celular: document.getElementById('reg-celular').value
+            };
+    
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert('Conta criada com sucesso!');
+                    switchTab('login');
+                    formRegister.reset();
+                } else {
+                    const data = await res.json();
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor.');
+            }
+        });
+    }
+
+    // Finalizar Checkout
+    if(checkoutForm) {
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = checkoutForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+
+            const formData = new FormData(checkoutForm);
+            const data = Object.fromEntries(formData.entries());
+            data.quantidade = currentQty;
+            data.total = currentQty * UNIT_PRICE;
+
+            try {
+                btn.innerText = "Processando...";
+                btn.disabled = true;
+
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Pedido realizado com sucesso!');
+                    window.location.href = '/'; 
+                } else {
+                    alert('Erro ao processar pedido.');
+                }
+            } catch (error) {
+                alert('Erro na conexão.');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // Inicializa os preços na tela
+    updateDisplay();
 });

@@ -25,7 +25,7 @@
         <div class="checkout-grid">
             
             <div class="col-form">
-                <div class="card">
+                <div class="card full-height-card">
                     <h2 class="card-headline">Informações Pessoais</h2>
                     <form id="purchase-form">
                         <div class="field-stack">
@@ -61,20 +61,13 @@
                         </div>
 
                         <div class="field-row">
-                            <div class="field-stack flex-grow-2">
+                            <div class="field-stack flex-2">
                                 <label>Cidade</label>
                                 <input type="text" placeholder="Sua cidade">
                             </div>
-                            <div class="field-stack flex-grow-1">
+                            <div class="field-stack flex-1">
                                 <label>Estado</label>
-                                <div class="select-container">
-                                    <select>
-                                        <option value="" disabled selected>Selecione</option>
-                                        <option value="SP">SP</option>
-                                        <option value="RJ">RJ</option>
-                                        <option value="MG">MG</option>
-                                    </select>
-                                </div>
+                                <input type="text" id="state" placeholder="Ex: SP">
                             </div>
                         </div>
                     </form>
@@ -85,27 +78,23 @@
                 
                 <div class="card">
                     <h2 class="card-headline">Resumo do Produto</h2>
-                    <div class="product-info-display">
-                        <div class="img-thumb">
-                            <img src="oculos_frente.png" alt="Produto">
+                    <div class="product-display-perpendicular">
+                        <div class="img-container-full">
+                            <img src="oculos_perspectiva.png" alt="Óculos ProVision Elite">
                         </div>
-                        <div class="text-meta">
-                            <h3>Óculos ProVision Elite</h3>
-                            <p>Lentes com filtro de luz azul premium, armação em acetato italiano</p>
-                            <span class="orange-price">R$ 297,00</span>
+                        
+                        <div class="price-and-qty-row">
+                            <div class="qty-control-minimal">
+                                <button type="button" id="minus">−</button>
+                                <span id="qty">1</span>
+                                <button type="button" id="plus">+</button>
+                            </div>
+                            <div class="main-price-highlight" id="item-subtotal">R$ 297,00</div>
                         </div>
-                    </div>
-                    <div class="qty-and-price">
-                        <div class="qty-control">
-                            <button type="button" id="minus">−</button>
-                            <span id="qty">1</span>
-                            <button type="button" id="plus">+</button>
-                        </div>
-                        <div class="price-sum" id="item-subtotal">R$ 297,00</div>
                     </div>
                 </div>
 
-                <div class="card order-details">
+                <div class="card order-card-final">
                     <h2 class="card-headline">Resumo do Pedido</h2>
                     <div class="row-info">
                         <span>Subtotal</span>
@@ -113,12 +102,12 @@
                     </div>
                     <div class="row-info">
                         <span>Frete</span>
-                        <span>R$ 19,90</span>
+                        <span class="free-shipping">R$ 0,00</span>
                     </div>
                     <div class="line-break"></div>
                     <div class="row-info total-row">
                         <span>Total</span>
-                        <span class="big-orange" id="total-label">R$ 316,90</span>
+                        <span class="big-orange" id="total-label">R$ 297,00</span>
                     </div>
 
                     <button type="submit" form="purchase-form" class="btn-submit">Finalizar Compra</button>
